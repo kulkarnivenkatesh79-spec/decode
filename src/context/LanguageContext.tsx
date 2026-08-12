@@ -158,6 +158,240 @@ const UI_TRANSLATIONS: Translations = {
     mr: 'गोपनीय खाजगी मार्ग',
     ta: 'ரகசிய தனிப்பட்ட பாதை'
   },
+  ashaAlertDispatch: {
+    en: 'ASHA & ANM Alert Dispatch',
+    hi: 'आशा एवं एएनएम कार्यकर्ता अलर्ट प्रेषण',
+    mr: 'आशा व एएनएम कार्यकत्री अलर्ट प्रणाली',
+    ta: 'ஆஷா விழிப்பூட்டல் மையம்'
+  },
+  pendingLabel: {
+    en: 'PENDING',
+    hi: 'लंबित',
+    mr: 'प्रलंबित',
+    ta: 'நிலுவையில்'
+  },
+  ashaDispatchDesc: {
+    en: 'Automated high-severity symptom triggers for local village healthcare workers.',
+    hi: 'ग्रामीण स्वास्थ्य कार्यकर्ताओं के लिए स्वचालित आपातकालीन अलर्ट प्रणाली।',
+    mr: 'ग्रामीण आरोग्य सेविकांसाठी स्वयंचलित आपत्कालीन इशारा प्रणाली.',
+    ta: 'கிராமப்புற சுகாதார ஊழியர்களுக்கான அவசர விழிப்பூட்டல்.'
+  },
+  noEscalationsDesc: {
+    en: 'The ASHA dispatch queue is currently clear. When patients report red-flag emergency symptoms during triage sessions, automated alerts will appear here in real-time.',
+    hi: 'आशा कार्यकर्ता रिस्पॉन्स कतार अभी खाली है। जब मरीज लक्षण जांच के दौरान गंभीर स्थिति दर्ज करते हैं, तो अलर्ट तुरंत यहां दिखाई देंगे।',
+    mr: 'आशा प्रतिसाद रांग सध्या रिकामी आहे. रुग्णांनी गंभीर लक्षणे नोंदवल्यास त्वरित अलर्ट येथे दिसतील.',
+    ta: 'ஆஷா வரிசை காலியாக உள்ளது. அவசர அறிகுறிகள் இருந்தால் இங்கு எச்சரிக்கை தோன்றும்.'
+  },
+  generateWeeklyAdvisory: {
+    en: 'Generate Weekly Village Health Advisory Poster',
+    hi: 'साप्ताहिक ग्राम स्वास्थ्य पोस्टर बनाएं',
+    mr: 'साप्ताहिक ग्राम आरोग्य पोस्टर तयार करा',
+    ta: 'வாராந்திர சுகாதார சுவரொட்டி உருவாக்கவும்'
+  },
+  escalationLabel: {
+    en: 'ESCALATION',
+    hi: 'आपातकालीन अलर्ट',
+    mr: 'आपत्कालीन इशारा',
+    ta: 'அவசர எச்சரிக்கை'
+  },
+  dispatchAmbulance: {
+    en: 'Dispatch 108 Ambulance',
+    hi: '108 एम्बुलेंस बुलाएं',
+    mr: '१०८ रुग्णवाहिका बोलवा',
+    ta: '108 ஆம்புலன்ஸ் வரவழைக்க'
+  },
+  digitalPassHeader: {
+    en: 'Digital Health Pass Card',
+    hi: 'डिजिटल हेल्थ पास कार्ड',
+    mr: 'डिजिटल हेल्थ पास कार्ड',
+    ta: 'டிஜிட்டல் சுகாதார அட்டை'
+  },
+  scanAshaDesc: {
+    en: 'Scan with ASHA Worker reader for offline history access',
+    hi: 'ऑफ़लाइन मेडिकल इतिहास के लिए आशा कार्यकर्ता द्वारा स्कैन कराएं',
+    mr: 'ऑफलाईन वैद्यकीय इतिहासासाठी आशा सेविकेकडून स्कॅन करून घ्या',
+    ta: 'ஆரோக்கிய விவரங்களை அறிய ஆஷா பணியாளரிடம் ஸ்கேன் செய்ய பயன்படுத்தவும்'
+  },
+  nationalHealthPass: {
+    en: 'National Health Pass • ABHA Compliant ID',
+    hi: 'राष्ट्रीय स्वास्थ्य पास • आभा (ABHA) आईडी',
+    mr: 'राष्ट्रीय आरोग्य पास • आभा (ABHA) आयडी',
+    ta: 'தேசிய சுகாதார அட்டை • ABHA ஐடி'
+  },
+  ageGender: {
+    en: 'Age / Gender',
+    hi: 'आयु / लिंग',
+    mr: 'वय / लिंग',
+    ta: 'வயது / பாலினம்'
+  },
+  districtSector: {
+    en: 'District / Sector',
+    hi: 'जिला / क्षेत्र',
+    mr: 'जिल्हा / क्षेत्र',
+    ta: 'மாவட்டம் / பிரிவு'
+  },
+  encodedPayload: {
+    en: 'Encoded Offline Payload:',
+    hi: 'एनकोडेड ऑफ़लाइन इतिहास सत्र:',
+    mr: 'ऑफलाईन माहिती सत्र:',
+    ta: 'பதிவு செய்யப்பட்ட ஆஃப்லைன் விபரம்:'
+  },
+  recentSessions: {
+    en: 'Recent Triage Sessions:',
+    hi: 'हाल के जांच सत्र:',
+    mr: 'नुकतेच तपासणी सत्र:',
+    ta: 'சமீபத்திய பரிசோதனை அமர்வுகள்:'
+  },
+  copiedBtn: {
+    en: 'Copied',
+    hi: 'कॉपी हो गया',
+    mr: 'कॉपी झाले',
+    ta: 'நகலெடுக்கப்பட்டது'
+  },
+  copyTextBtn: {
+    en: 'Copy Text',
+    hi: 'कोड कॉपी करें',
+    mr: 'कोड कॉपी करा',
+    ta: 'நகலெடு'
+  },
+  closeBtn: {
+    en: 'Close',
+    hi: 'बंद करें',
+    mr: 'बंद करा',
+    ta: 'மூடு'
+  },
+  appSubtitle: {
+    en: 'Rural Health Triage & Scheme Assistant',
+    hi: 'ग्रामीण स्वास्थ्य जांच एवं योजना सहायक',
+    mr: 'ग्रामीण आरोग्य तपासणी व योजना सहाय्यक',
+    ta: 'கிராமப்புற சுகாதார உதவி மையம்'
+  },
+  citizenPatientTab: {
+    en: 'Citizen / Patient',
+    hi: 'नागरिक / रोगी',
+    mr: 'नागरिक / रुग्ण',
+    ta: 'குடிமகன் / நோயாளி'
+  },
+  ashaWorkerTab: {
+    en: 'ASHA Worker Portal',
+    hi: 'आशा कार्यकर्ता पोर्टल',
+    mr: 'आशा सेवेकरी पोर्टल',
+    ta: 'ஆஷா பணியாளர் போர்டல்'
+  },
+  citizenLoginDesc: {
+    en: 'Access personalized AI symptom triage, scheme matching & digital health pass.',
+    hi: 'व्यक्तिगत एआई लक्षण जांच, योजना मिलान और डिजिटल स्वास्थ्य पास प्राप्त करें।',
+    mr: 'वैयक्तिक एआय लक्षण तपासणी, योजना आणि डिजिटल आरोग्य पास मिळवा.',
+    ta: 'தனிப்பயனாக்கப்பட்ட AI பரிசோதனை மற்றும் திட்டங்களைப் பெறுங்கள்.'
+  },
+  connectingGoogle: {
+    en: 'Connecting with Google Authentication...',
+    hi: 'गूगल प्रमाणीकरण से जुड़ रहे हैं...',
+    mr: 'गूगल ऑथेंटिकेशनशी जोडत आहे...',
+    ta: 'கூகிள் அங்கீகாரத்துடன் இணைக்கிறது...'
+  },
+  signInWithGoogle: {
+    en: 'Sign in with Google',
+    hi: 'गूगल से साइन इन करें',
+    mr: 'गूगलद्वारे साइन इन करा',
+    ta: 'கூகிள் மூலம் உள்நுழைக'
+  },
+  continueAsGuest: {
+    en: 'Continue as Guest Citizen',
+    hi: 'अतिथि नागरिक के रूप में जारी रखें',
+    mr: 'पाहुणे नागरिक म्हणून पुढे जा',
+    ta: 'விருந்தினராக தொடரவும்'
+  },
+  createAshaAccountDesc: {
+    en: 'Create worker profile for district field queue access.',
+    hi: 'जिला फ़ील्ड कतार पहुंच के लिए कार्यकर्ता प्रोफ़ाइल बनाएं।',
+    mr: 'जिल्हा फील्ड रांगेसाठी सेवेकरी प्रोफाइल तयार करा.',
+    ta: 'மாவட்ட கள வரிசை அணுகலுக்கான சுயவிவரத்தை உருவாக்கவும்.'
+  },
+  ashaLoginDesc: {
+    en: 'Sign in to manage emergency village escalations.',
+    hi: 'आपातकालीन ग्राम अलर्ट प्रबंधित करने के लिए साइन इन करें।',
+    mr: 'आपत्कालीन ग्राम अलर्ट व्यवस्थापनासाठी साइन इन करा.',
+    ta: 'கிராமப்புற அவசர நிலைகளை நிர்வகிக்க உள்நுழையவும்.'
+  },
+  ashaEmailLabel: {
+    en: 'ASHA Email Address',
+    hi: 'आशा ईमेल पता',
+    mr: 'आशा ई-मेल पत्ता',
+    ta: 'ஆஷா மின்னஞ்சல் முகவரி'
+  },
+  passwordLabel: {
+    en: 'Password',
+    hi: 'पासवर्ड',
+    mr: 'पासवर्ड',
+    ta: 'கடவுச்சொல்'
+  },
+  registerAshaAccountBtn: {
+    en: 'Register ASHA Worker Account',
+    hi: 'आशा कार्यकर्ता खाता पंजीकृत करें',
+    mr: 'आशा सेवेकरी खाते नोंदवा',
+    ta: 'ஆஷா கணக்கை பதிவு செய்யவும்'
+  },
+  signInAsAshaBtn: {
+    en: 'Sign in as ASHA Worker',
+    hi: 'आशा कार्यकर्ता के रूप में साइन इन करें',
+    mr: 'आशा सेवेकरी म्हणून साइन इन करा',
+    ta: 'ஆஷா பணியாளராக உள்நுழையவும்'
+  },
+  alreadyHaveAccount: {
+    en: 'Already registered? Sign in here',
+    hi: 'पहले से पंजीकृत हैं? यहां साइन इन करें',
+    mr: 'आधीच नोंदणीकृत आहात? येथे साइन इन करा',
+    ta: 'ஏற்கனவே பதிவுசெய்துள்ளீர்களா? உள்நுழையவும்'
+  },
+  newAshaWorker: {
+    en: 'New ASHA Worker? Register here',
+    hi: 'नए आशा कार्यकर्ता? यहां पंजीकरण करें',
+    mr: 'नवीन आशा सेवेकरी? येथे नोंदणी करा',
+    ta: 'புதிய ஆஷா பணியாளரா? பதிவு செய்யவும்'
+  },
+  critical: {
+    en: 'CRITICAL',
+    hi: 'गंभीर',
+    mr: 'गंभीर',
+    ta: 'முக்கியமான'
+  },
+  maternal: {
+    en: 'MATERNAL',
+    hi: 'मातृ',
+    mr: 'माता',
+    ta: 'தாய்மை'
+  },
+  advisoryGeneratorHeader: {
+    en: 'Village Health Advisory Generator',
+    hi: 'ग्राम स्वास्थ्य सलाह जनरेटर',
+    mr: 'ग्राम आरोग्य सल्ला निर्मिती',
+    ta: 'கிராம சுகாதார ஆலோசனை'
+  },
+  ragGrounded: {
+    en: 'RAG Grounded in MoHFW Directives',
+    hi: 'स्वास्थ्य मंत्रालय दिशानिर्देशों पर आधारित',
+    mr: 'आरोग्य मंत्रालय मार्गदर्शक तत्त्वांवर आधारित',
+    ta: 'வழிகாட்டுதலின்படி உருவாக்கப்பட்டது'
+  },
+  advisoryGeneratorDesc: {
+    en: 'AI-Generated Weekly PHC Noticeboard Poster grounded in WHO IMCI & ICMR guidelines',
+    hi: 'डब्ल्यूएचओ एवं आईसीएमआर दिशानिर्देशों पर आधारित एआई-निर्मित पोस्टर',
+    mr: 'डब्ल्यूएचओ व आयसीएमआर वर आधारित एआय पोस्टर',
+    ta: 'சுவரொட்டி ஆக்கி'
+  },
+  regenerateBtn: {
+    en: 'Regenerate',
+    hi: 'पुनः बनाएं',
+    mr: 'पुन्हा तयार करा',
+    ta: 'மீண்டும் உருவாக்கு'
+  },
+  printPosterBtn: {
+    en: 'Print A5 Poster',
+    hi: 'A5 पोस्टर प्रिंट करें',
+    mr: 'A5 पोस्टर प्रिंट करा',
+    ta: 'A5 போஸ்டர் பிரிண்ட்'
+  },
   immediateEscalation: {
     en: 'IMMEDIATE ESCALATION',
     hi: 'तत्काल आपातकालीन रेफरल',

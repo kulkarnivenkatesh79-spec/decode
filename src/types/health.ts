@@ -32,11 +32,16 @@ export interface TriageInput {
 export interface TriageResult {
   symptoms: string[];
   severity: 'MILD' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  severity_level?: 'GREEN' | 'YELLOW' | 'RED';
   triage_advice: string;
   disclaimer: string;
   escalate_immediately: boolean;
   escalation_reason: string;
   timestamp?: string;
+  icmr_verified?: boolean;
+  icmr_confidence?: number;
+  icmr_protocol_note?: string;
+  disable_self_medication?: boolean;
   is_sensitive?: boolean;
   sensitive_category?: string;
   is_private_routing?: boolean;

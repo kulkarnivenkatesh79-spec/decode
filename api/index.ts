@@ -1,9 +1,9 @@
 import express from "express";
-import { runTriageSymptom, TriageInput } from "../backend/services/triageService";
-import { matchSchemes } from "../backend/services/schemesService";
-import { getNearestFacilities } from "../backend/services/facilitiesService";
-import { createAshaAlert, getAshaAlertsAsync, updateAshaAlertStatusAsync, generateUserIdHash } from "../backend/services/alertsService";
-import { generateVillageAdvisory } from "../backend/services/advisoryService";
+import { runTriageSymptom, TriageInput } from "./services/triageService";
+import { matchSchemes } from "./services/schemesService";
+import { getNearestFacilities } from "./services/facilitiesService";
+import { createAshaAlert, getAshaAlertsAsync, updateAshaAlertStatusAsync, generateUserIdHash } from "./services/alertsService";
+import { generateVillageAdvisory } from "./services/advisoryService";
 
 const app = express();
 
@@ -37,44 +37,131 @@ app.get(["/health", "/api/health", "/"], (req, res) => {
 
 // Triage Symptom endpoint
 app.post(["/api/triageSymptom", "/triageSymptom"], async (req, res) => {
+  console.log(`\n==================================================`);
+  console.log(`[TRIAGE ROUTE] Step 1: Request received at /api/triageSymptom`);
+  console.log(`[TRIAGE ROUTE] Method: ${req.method}, URL: ${req.url}`);
+
   try {
-    const input: TriageInput = req.body;
-    if (!input || (!input.message && !input.imageBase64)) {
-      return res.status(400).json({ error: "Missing required 'message' or 'imageBase64' field in body." });
+    // 1. Request Body & Type Validation
+    const body = req.body;
+    if (!body || typeof body !== "object") {
+      console.warn("[TRIAGE ROUTE] Validation Failed: Request body missing or not a JSON object.");
+      return res.status(400).json({
+        success: false,
+        error: "Invalid request body. Expected a JSON object.",
+        stage: "validation"
+      });
     }
 
-    const result = await runTriageSymptom(input);
-    const userId = input.userId || "anon_user_" + Math.random().toString(36).substring(2, 8);
-    const userIdHash = generateUserIdHash(userId);
-    const sessionId = input.sessionId || "session_" + Date.now();
+    const { message, imageBase64, language, age, userProfile, preferPrivate, userId, sessionId } = body;
 
+    const hasMessage = typeof message === "string" && message.trim().length > 0;
+    const hasImage = typeof imageBase64 === "string" && imageBase64.trim().length > 0;
+
+    if (!hasMessage && !hasImage) {
+      console.warn("[TRIAGE ROUTE] Validation Failed: Neither 'message' nor 'imageBase64' was provided.");
+      return res.status(400).json({
+        success: false,
+        error: "Missing required 'message' (symptom description) or 'imageBase64' (symptom photograph) in request body.",
+        stage: "validation"
+      });
+    }
+
+    if (imageBase64 !== undefined && typeof imageBase64 !== "string") {
+      console.warn("[TRIAGE ROUTE] Validation Failed: 'imageBase64' field must be a string.");
+      return res.status(400).json({
+        success: false,
+        error: "Field 'imageBase64' must be a valid base64 string.",
+        stage: "validation"
+      });
+    }
+
+    if (language !== undefined && typeof language !== "string") {
+      console.warn("[TRIAGE ROUTE] Validation Warning: 'language' field is not a string, defaulting to 'en'.");
+    }
+
+    if (age !== undefined && typeof age !== "number" && typeof age !== "string") {
+      console.warn("[TRIAGE ROUTE] Validation Warning: 'age' field is invalid type.");
+    }
+
+    console.log(`[TRIAGE ROUTE] Step 2: Input Validation Passed. Payload summary:`, {
+      hasMessage,
+      messagePreview: hasMessage ? message.substring(0, 80) : "N/A",
+      hasImage,
+      imageLengthChars: hasImage ? imageBase64.length : 0,
+      language: language || "en",
+      age: age || "N/A",
+      hasUserProfile: Boolean(userProfile),
+      preferPrivate: Boolean(preferPrivate)
+    });
+
+    // 2. Execute Triage Pipeline Engine
+    console.log(`[TRIAGE ROUTE] Step 3: Invoking runTriageSymptom service engine...`);
+    const triageInput: TriageInput = {
+      message: hasMessage ? message : "Photograph of visible symptom submitted for clinical visual assessment.",
+      language: typeof language === "string" ? language : "en",
+      userProfile: (userProfile && typeof userProfile === "object") ? userProfile : undefined,
+      preferPrivate: Boolean(preferPrivate),
+      imageBase64: hasImage ? imageBase64 : undefined,
+      userId: typeof userId === "string" ? userId : undefined,
+      sessionId: typeof sessionId === "string" ? sessionId : undefined
+    };
+
+    const result = await runTriageSymptom(triageInput);
+    console.log(`[TRIAGE ROUTE] Step 4: Triage engine completed successfully. Severity: ${result.severity}, Escalate: ${result.escalate_immediately}`);
+
+    // 3. User ID & Session Hashing
+    const safeUserId = typeof userId === "string" && userId.trim() ? userId : "anon_user_" + Math.random().toString(36).substring(2, 8);
+    const userIdHash = generateUserIdHash(safeUserId);
+    const safeSessionId = typeof sessionId === "string" && sessionId.trim() ? sessionId : "session_" + Date.now();
+
+    // 4. ASHA Alert Escalation Persistence
     let createdAlert = null;
     if (result.escalate_immediately && !result.is_private_routing) {
+      console.log(`[TRIAGE ROUTE] Step 5: Escalation required. Writing ASHA alert to database...`);
       try {
         createdAlert = createAshaAlert({
-          sessionId,
+          sessionId: safeSessionId,
           severity: result.severity === "CRITICAL" ? "CRITICAL" : "HIGH",
-          symptomTags: result.symptoms.length > 0 ? result.symptoms : ["Critical Symptom"],
-          userMessage: input.message || "Visual Symptom Assessment Request",
+          symptomTags: (Array.isArray(result.symptoms) && result.symptoms.length > 0) ? result.symptoms : ["Critical Symptom"],
+          userMessage: triageInput.message,
           escalationReason: result.escalation_reason || "Immediate triage escalation required.",
-          district: input.userProfile?.state ? `${input.userProfile.state} Region` : "Rural District",
+          district: userProfile?.state ? `${userProfile.state} Region` : "Rural District",
           userIdHash
         });
-      } catch (alertErr) {
-        console.warn("Could not create ASHA alert:", alertErr);
+        console.log(`[TRIAGE ROUTE] Step 6: ASHA alert created successfully. Alert ID: ${createdAlert?.id}`);
+      } catch (alertErr: any) {
+        console.warn("[TRIAGE ROUTE] Warning: Non-fatal error persisting ASHA alert:", alertErr?.message || alertErr);
       }
+    } else {
+      console.log(`[TRIAGE ROUTE] Step 5: No public ASHA alert dispatched (Escalate: ${result.escalate_immediately}, PrivateRouting: ${result.is_private_routing}).`);
     }
 
-    res.json({
+    // 5. Final HTTP Response
+    console.log(`[TRIAGE ROUTE] Step 7: Returning successful 200 JSON triage response.`);
+    console.log(`==================================================\n`);
+
+    return res.json({
       success: true,
-      sessionId,
+      sessionId: safeSessionId,
       userIdHash,
       result,
       alert: createdAlert
     });
+
   } catch (err: any) {
-    console.error("Error in Vercel Serverless /api/triageSymptom:", err);
-    res.status(500).json({ error: err.message || "Failed to process symptom triage." });
+    console.error("[TRIAGE ROUTE] Unhandled Error in /api/triageSymptom endpoint:", {
+      message: err?.message || String(err),
+      name: err?.name,
+      stack: err?.stack
+    });
+
+    return res.status(500).json({
+      success: false,
+      error: err?.message || "Internal server error during symptom triage processing.",
+      stage: "unhandled_route_exception",
+      details: String(err)
+    });
   }
 });
 

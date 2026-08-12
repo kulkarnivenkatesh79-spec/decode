@@ -23,7 +23,13 @@ import {
   BellRing,
   BellOff,
   Volume2,
-  X
+  X,
+  Radio,
+  FileText,
+  Send,
+  Users,
+  Flame,
+  Award
 } from 'lucide-react';
 
 export const AshaAlertsQueue: React.FC = () => {
@@ -34,6 +40,91 @@ export const AshaAlertsQueue: React.FC = () => {
   const [isSystemHealthy, setIsSystemHealthy] = useState(true);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isAdvisoryModalOpen, setIsAdvisoryModalOpen] = useState(false);
+
+  // FEATURE 2: Syndromic Surveillance & Outbreak Detection Radar State
+  const [activeOutbreakCluster, setActiveOutbreakCluster] = useState({
+    id: 'cluster_dengue_khed',
+    disease: 'Dengue Hemorrhagic Fever',
+    sector: 'Khed Sector',
+    district: userProfile?.district || 'Pune Rural',
+    cases24h: 8,
+    baseline: 2,
+    spikePercentage: '+300% Surge',
+    status: 'ACTIVE_WARNING',
+    vectorRisk: 'Aedes Aegypti Larval Breeding in Water Tanks',
+    reportedSymptoms: ['High Fever with Chills', 'Retro-Orbital Eye Pain', 'Skin Petechiae Rashes'],
+    timestamp: 'Today, 08:30 AM'
+  });
+
+  const [broadcastStatus, setBroadcastStatus] = useState<string | null>(null);
+  const [officerNotification, setOfficerNotification] = useState<string | null>(null);
+
+  const simulateNextOutbreak = () => {
+    const outbreaks = [
+      {
+        id: 'cluster_dengue_khed',
+        disease: 'Dengue Hemorrhagic Fever',
+        sector: 'Khed Sector',
+        district: userProfile?.district || 'Pune Rural',
+        cases24h: 8,
+        baseline: 2,
+        spikePercentage: '+300% Surge',
+        status: 'ACTIVE_WARNING',
+        vectorRisk: 'Aedes Aegypti Larval Breeding in Water Tanks',
+        reportedSymptoms: ['High Fever with Chills', 'Retro-Orbital Eye Pain', 'Skin Petechiae Rashes'],
+        timestamp: 'Today, 08:30 AM'
+      },
+      {
+        id: 'cluster_cholera_ganjam',
+        disease: 'Acute Waterborne Gastroenteritis / Cholera Spike',
+        sector: 'Ganjam Sector',
+        district: 'Ganjam District',
+        cases24h: 14,
+        baseline: 3,
+        spikePercentage: '+366% Surge',
+        status: 'CRITICAL_CLUSTER',
+        vectorRisk: 'Contaminated Village Well Water Source #4',
+        reportedSymptoms: ['Profuse Watery Diarrhea', 'Severe Dehydration', 'Vomiting'],
+        timestamp: 'Just Now'
+      },
+      {
+        id: 'cluster_malaria_kalaburagi',
+        disease: 'Plasmodium Falciparum Malaria Anomaly',
+        sector: 'Sedam Sector',
+        district: 'Kalaburagi',
+        cases24h: 9,
+        baseline: 1,
+        spikePercentage: '+800% Spike',
+        status: 'HIGH_ANOMALY',
+        vectorRisk: 'Anopheles Mosquito Breeding in Stagnant Irrigation Ponds',
+        reportedSymptoms: ['High Fever with Rigors', 'Splenomegaly', 'Extreme Fatigue'],
+        timestamp: 'Just Now'
+      }
+    ];
+
+    const currentIndex = outbreaks.findIndex(o => o.id === activeOutbreakCluster.id);
+    const nextCluster = outbreaks[(currentIndex + 1) % outbreaks.length];
+    setActiveOutbreakCluster(nextCluster);
+    setBroadcastStatus(null);
+    setOfficerNotification(null);
+  };
+
+  const broadcastAudioAlert = () => {
+    const text = `Attention ASHA workers in ${activeOutbreakCluster.sector}: Early Epidemic Warning! ${activeOutbreakCluster.cases24h} cases of ${activeOutbreakCluster.disease} reported in 24 hours. Please initiate door-to-door survey and vector control immediately.`;
+    
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    setBroadcastStatus(`📢 Voice Broadcast Dispatched: Audio warning transmitted to 24 ASHA Workers in ${activeOutbreakCluster.sector} via WhatsApp & SMS Gateway.`);
+  };
+
+  const notifyMedicalOfficer = () => {
+    setOfficerNotification(`✅ Medical Officer Dr. S. Patil (PHC ${activeOutbreakCluster.sector}) & District Surveillance Unit (IDSP) notified with auto-generated case dossier.`);
+  };
 
   // Notification & Realtime Toast State
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>(
@@ -106,6 +197,7 @@ export const AshaAlertsQueue: React.FC = () => {
     createAshaAlert(demoAlert);
     playEmergencyChime();
     setActiveEmergencyToast(demoAlert);
+    setAlerts(prev => [demoAlert, ...prev.filter(a => a.id !== demoAlert.id)]);
   };
 
   const triggerProactiveNotice = () => {
@@ -412,6 +504,137 @@ export const AshaAlertsQueue: React.FC = () => {
             <span className="hidden sm:inline">{t('refreshQueue')}</span>
           </button>
         </div>
+      </div>
+
+      {/* FEATURE 2: Syndromic Surveillance & Outbreak Detection Radar Card */}
+      <div className="bg-[#151318] text-white rounded-2xl p-6 border-2 border-[#D4A24E]/40 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-800">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-xl bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse">
+              <Radio className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[10px] font-black tracking-widest text-[#E0A845] uppercase">
+                  IDSP Syndromic Surveillance AI Engine
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-red-600 text-white font-black text-[9px] uppercase tracking-wider animate-pulse">
+                  Live Outbreak Warning
+                </span>
+              </div>
+              <h3 className="font-serif text-xl font-bold text-stone-100">
+                Early Epidemic Warning Radar
+              </h3>
+            </div>
+          </div>
+
+          <button
+            onClick={simulateNextOutbreak}
+            className="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black transition-all shadow-md flex items-center space-x-1.5 cursor-pointer border border-red-400 shrink-0"
+            title="Judge Presentation Demo: Click to cycle through simulated outbreak clusters in real-time"
+          >
+            <Flame className="w-4 h-4 text-amber-300 animate-bounce" />
+            <span>Simulate Outbreak</span>
+          </button>
+        </div>
+
+        {/* Live Cluster Alert Header */}
+        <div className="p-4 rounded-xl bg-red-950/60 border border-red-800/80 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-start space-x-2.5">
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5 animate-bounce" />
+              <div>
+                <h4 className="font-bold text-sm text-red-100">
+                  ⚠️ Potential {activeOutbreakCluster.disease} Cluster Detected in {activeOutbreakCluster.sector} ({activeOutbreakCluster.cases24h} cases reported in 24 hrs)
+                </h4>
+                <p className="text-xs text-stone-300 mt-0.5">
+                  District: <span className="font-semibold text-amber-300">{activeOutbreakCluster.district}</span> • Vector / Environmental Risk: <span className="font-semibold text-stone-200">{activeOutbreakCluster.vectorRisk}</span>
+                </p>
+              </div>
+            </div>
+            <span className="px-3 py-1 rounded-lg bg-amber-400 text-stone-950 text-xs font-black uppercase shrink-0">
+              {activeOutbreakCluster.spikePercentage}
+            </span>
+          </div>
+
+          {/* Metrics Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 text-xs border-t border-red-900/60">
+            <div className="bg-stone-900/80 p-2.5 rounded-lg border border-stone-800">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block">24h Case Surge</span>
+              <span className="font-extrabold text-red-400 text-sm">{activeOutbreakCluster.cases24h} Cases</span>
+              <span className="text-[10px] text-stone-400 block">Baseline: {activeOutbreakCluster.baseline}/day</span>
+            </div>
+            <div className="bg-stone-900/80 p-2.5 rounded-lg border border-stone-800">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block">Primary Symptoms</span>
+              <span className="font-semibold text-stone-200 text-xs truncate block">{activeOutbreakCluster.reportedSymptoms.join(', ')}</span>
+            </div>
+            <div className="bg-stone-900/80 p-2.5 rounded-lg border border-stone-800">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block">ASHA Coverage</span>
+              <span className="font-bold text-emerald-400 text-xs block">24 Workers Active</span>
+            </div>
+            <div className="bg-stone-900/80 p-2.5 rounded-lg border border-stone-800">
+              <span className="text-stone-400 text-[10px] uppercase font-bold block">Epidemic Radar Status</span>
+              <span className="font-extrabold text-amber-300 text-xs uppercase block">{activeOutbreakCluster.status}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 3 Game-Changing Action Buttons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <button
+            onClick={() => setIsAdvisoryModalOpen(true)}
+            className="p-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-white text-xs font-bold transition-all shadow-md flex items-center space-x-2.5 cursor-pointer hover:border-[#D4A24E]"
+          >
+            <div className="p-2 rounded-lg bg-[#D4A24E]/20 text-[#E0A845] shrink-0">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <div className="font-extrabold text-stone-100">Generate Advisory PDF</div>
+              <div className="text-[10px] text-stone-400">Print vernacular poster for village</div>
+            </div>
+          </button>
+
+          <button
+            onClick={broadcastAudioAlert}
+            className="p-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-white text-xs font-bold transition-all shadow-md flex items-center space-x-2.5 cursor-pointer hover:border-amber-400"
+          >
+            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 shrink-0">
+              <Volume2 className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <div className="font-extrabold text-stone-100">Broadcast Audio Alert</div>
+              <div className="text-[10px] text-stone-400">Transmit voice warning via WhatsApp/SMS</div>
+            </div>
+          </button>
+
+          <button
+            onClick={notifyMedicalOfficer}
+            className="p-3.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-white text-xs font-bold transition-all shadow-md flex items-center space-x-2.5 cursor-pointer hover:border-red-400"
+          >
+            <div className="p-2 rounded-lg bg-red-500/20 text-red-400 shrink-0">
+              <Send className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <div className="font-extrabold text-stone-100">Notify PHC Medical Officer</div>
+              <div className="text-[10px] text-stone-400">Instant dispatch to Dr. S. Patil (PHC)</div>
+            </div>
+          </button>
+        </div>
+
+        {/* Feedback Banners */}
+        {broadcastStatus && (
+          <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-xs font-semibold flex items-center space-x-2 animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{broadcastStatus}</span>
+          </div>
+        )}
+
+        {officerNotification && (
+          <div className="p-3 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-200 text-xs font-semibold flex items-center space-x-2 animate-fadeIn">
+            <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>{officerNotification}</span>
+          </div>
+        )}
       </div>
 
       {/* Alerts Feed */}
